@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     Vector2 movement;
     public Animator animator;
     private bool facingRight = true;
+    public Joystick joystick;
 
     void Start()
     {
@@ -20,8 +21,8 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         //Input
-       movement.x = Input.GetAxisRaw("Horizontal");
-       movement.y = Input.GetAxisRaw("Vertical");
+       movement.x = joystick.Horizontal;
+       movement.y = joystick.Vertical;
        animator.SetFloat("Horizontal", movement.y);
        animator.SetFloat("Vertical", movement.x);
        animator.SetFloat("Speed", movement.sqrMagnitude);
