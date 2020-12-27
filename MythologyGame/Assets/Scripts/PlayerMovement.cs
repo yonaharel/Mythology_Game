@@ -5,48 +5,62 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     // Start is called before the first frame update
-    public float moveSpeed = 5f;
-    public Rigidbody2D rb;
-    Vector2 movement;
+    public float runSpeed = 50f;
     public Animator animator;
-    private bool facingRight = true;
     public Joystick joystick;
+    float horizontalMove = 0f;
+    bool jump = false;
+    bool crouch = false;
+
+    public CharacterController2D controller;
+
 
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
         //Input
-       movement.x = joystick.Horizontal;
-       movement.y = joystick.Vertical;
-       animator.SetFloat("Horizontal", movement.y);
-       animator.SetFloat("Vertical", movement.x);
-       animator.SetFloat("Speed", movement.sqrMagnitude);
+        horizontalMove = joystick.Horizontal * runSpeed;
 
-        Vector3 localScale = transform.localScale;
+        animator.SetFloat("Speed", Mathf.Abs(horizontalMove));
 
-        if (movement.x < 0 && facingRight)
-        {
-            facingRight = false;
-            localScale.x *= -1;
-            transform.localScale = localScale;
-        }
+        float verticalMove = joystick.Vertical;
+
+        //if (verticalMove <= .5f)
+        //{
+        //    crouch = true;
+        //}
+        //else crouch = false;
+
+    }
+
+    public void OnLanding()
+    {
+        animator.SetBool("isJumping", false);
+    }
+
+    public void JumpButtonPressed()
+    {
+        jump = true;
+        animator.SetBool("isJumping", true);
+    }
+
+    public void CrouchButtonPressed()
+    {
+        crouch = true;
         
-        if (!facingRight && movement.x > 0)
-        {
-            facingRight = true;
-            localScale.x *= -1;
-            transform.localScale = localScale;
-        }
     }
 
     private void FixedUpdate()
     {
+        animator.SetBool("isCrouching", crouch);
         //Movement
-        rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+        controller.Move(horizontalMove * Time.fixedDeltaTime, crouch, jump);
+        jump = false;
+        crouch = false;
     }
 }
